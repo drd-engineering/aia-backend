@@ -4,9 +4,18 @@ Contributors: frannadrd
 
 served use Go Lang
 
-To install this package to your project use following command
+To install this package first of all you should install go and locate your $GOPATH. then clone this project under your src/DRD
 
-go get github.com/drd-engineering/aia-backend
+ $GOPATH
+    ├── bin
+    ├── pkg
+    └── src
+         ├── DRD    <------ Here it is
+         ├── 
+         .   
+         .   
+         .
+         └── src
 
 *Warning you neeed some other package from other source listed below
 
