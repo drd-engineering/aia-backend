@@ -14,7 +14,7 @@ var once sync.Once
 func GetInstance() *gin.Engine {
 	// Initiate value if there is no instance
 	once.Do(func() {
-		instance = gin.Default()
+		instance = gin.New()
 
 		// LoggerWithFormatter middleware will write the logs to gin.DefaultWriter
 		// By default gin.DefaultWriter = os.Stdout
@@ -40,6 +40,8 @@ func GetInstance() *gin.Engine {
 }
 
 func CORSMiddleware() gin.HandlerFunc {
+	// Still need some improvements.
+	// adding header to define the application detail
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Max-Age", "86400")
