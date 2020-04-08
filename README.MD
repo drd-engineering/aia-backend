@@ -5,7 +5,7 @@ Contributors: frannadrd
 served use Go Lang
 
 To install this package first of all you should install go and locate your $GOPATH. then clone this project under your src/DRD
-
+```
  $GOPATH
     ├── bin
     ├── pkg
@@ -16,8 +16,8 @@ To install this package first of all you should install go and locate your $GOPA
          .   
          .
          └── src
-
-*Warning you neeed some other package from other source listed below
+```
+*Warning you need some other package from other source listed below
 
 -  Gorm get it from
 
