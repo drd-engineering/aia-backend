@@ -24,7 +24,7 @@ func InitiateRoutes() {
 		eSignRoutes.Use(ApplicationAuthorizationRequired())
 		{
 			eSignRoutes.POST("/save-user", saveUser)
-			eSignRoutes.POST("/regenerate-link", regenerateLink)
+			eSignRoutes.POST("/get-signature/", getSignature)
 		}
 
 		eSignPublic := apiroutes.Group("/e-sign")
