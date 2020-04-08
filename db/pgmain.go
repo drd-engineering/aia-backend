@@ -54,12 +54,12 @@ func InitPostgre() {
 	db.Debug().AutoMigrate(&User{}, &Company{}, &AppToken{}, &ApiLog{}, &ApiType{}, &Session{}, &AuditTrails{})
 	// db.Debug().AutoMigrate(&Account{}, &Contact{}) //Database migration
 
-	// db.Debug().Model(&AppToken{}).AddForeignKey("company_id", "companies(ID)", "CASCADE", "CASCADE")
-	// db.Debug().Model(&ApiLog{}).AddForeignKey("app_token_id", "app_tokens(ID)", "CASCADE", "CASCADE")
-	// db.Debug().Model(&ApiLog{}).AddForeignKey("api_type_id", "api_logs(ID)", "CASCADE", "CASCADE")
-	// db.Debug().Model(&Session{}).AddForeignKey("user_id", "users(ID)", "CASCADE", "CASCADE")
-	// db.Debug().Model(&AuditTrails{}).AddForeignKey("user_id", "users(ID)", "CASCADE", "CASCADE")
-	// db.Debug().Model(&AuditTrails{}).AddForeignKey("company_id", "companies(ID)", "CASCADE", "CASCADE")
+	db.Debug().Model(&AppToken{}).AddForeignKey("company_id", "companies(ID)", "CASCADE", "CASCADE")
+	db.Debug().Model(&ApiLog{}).AddForeignKey("app_token_id", "app_tokens(ID)", "CASCADE", "CASCADE")
+	db.Debug().Model(&ApiLog{}).AddForeignKey("api_type_id", "api_logs(ID)", "CASCADE", "CASCADE")
+	db.Debug().Model(&Session{}).AddForeignKey("user_id", "users(ID)", "CASCADE", "CASCADE")
+	db.Debug().Model(&AuditTrails{}).AddForeignKey("user_id", "users(ID)", "CASCADE", "CASCADE")
+	db.Debug().Model(&AuditTrails{}).AddForeignKey("company_id", "companies(ID)", "CASCADE", "CASCADE")
 
 	company := Company{Name: "AIA", Email: "aia@aia.com", CreatedAt: time.Now()}
 	db.FirstOrCreate(&company)
@@ -86,7 +86,7 @@ type User struct {
 	Name         string
 	Gender       string
 	Email        string
-	KtpNumber    int64
+	KtpNumber    int64 `gorm:"unique;not null"`
 	Address      string
 	PhoneNumber  string
 	DateOfBirth  time.Time
