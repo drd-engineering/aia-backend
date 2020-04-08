@@ -27,9 +27,16 @@ func saveSigns(c *gin.Context) {
 	}
 
 	// Set Folder untuk menyimpan filenya
+	err = ensureUserImageFolderExist(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
+		return
+	}
+	folderPath := "./Images/Users/" + user.ID + "/"
+
 	filename := filepath.Base(file.Filename)
-	if err := c.SaveUploadedFile(file, filename); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+	if err := c.SaveUploadedFile(file, folderPath+filename); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
 		return
 	}
 	dbInstance.Model(&user).Update("Signature", filename)
@@ -38,21 +45,22 @@ func saveSigns(c *gin.Context) {
 	file, err = c.FormFile("Signature2")
 	if err == nil {
 		// Set Folder untuk menyimpan filenya
-		filename2 := filepath.Base(file.Filename)
-		if err = c.SaveUploadedFile(file, filename2); err != nil {
-			filename2 = ""
-		}
-		dbInstance.Model(&user).Update("Signature2", filename2)
+		filename = filepath.Base(file.Filename)
+		err = c.SaveUploadedFile(file, folderPath+filename)
+	}
+	if err == nil {
+		dbInstance.Model(&user).Update("Signature2", filename)
 	}
 	file, err = c.FormFile("Signature3")
 	if err == nil {
 		// Set Folder untuk menyimpan filenya
-		filename3 := filepath.Base(file.Filename)
-		if err = c.SaveUploadedFile(file, filename3); err != nil {
-			filename3 = ""
-		}
-		dbInstance.Model(&user).Update("Signature3", filename3)
+		filename = filepath.Base(file.Filename)
+		err = c.SaveUploadedFile(file, folderPath+filename)
 	}
+	if err == nil {
+		dbInstance.Model(&user).Update("Signature3", filename)
+	}
+
 	// Response
 	response := UserSignature{
 		UserId: user.ID,

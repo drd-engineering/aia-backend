@@ -24,3 +24,8 @@ type UserSignature struct {
 	UserId    string   `json:"UserId"`
 	Signature []string `json:"Signature"`
 }
+
+type UserSignatureStatus struct {
+	UserId     string `json:"UserId"`
+	SignStatus int32  `json:"SignStatus"`
+}
