@@ -12,6 +12,7 @@ import (
 func getUser(c *gin.Context) {
 	token := c.Param("token")
 	fmt.Println(token)
+
 	dbInstance := db.GetDb()
 	var session db.Session
 	dbInstance.First(&session, "token = ?", token)
@@ -24,6 +25,7 @@ func getUser(c *gin.Context) {
 		c.AbortWithStatus(404)
 	}
 
+	userDateOfBirth := user.DateOfBirth.Format("2006-01-02")
 	userReturn := User{
 		KtpNumber:    user.KtpNumber,
 		Name:         user.Name,
@@ -31,7 +33,7 @@ func getUser(c *gin.Context) {
 		Gender:       user.Gender,
 		PlaceOfBirth: user.PlaceOfBirth,
 		Cityzenship:  user.Cityzenship,
-		DateOfBirth:  "",
+		DateOfBirth:  userDateOfBirth,
 	}
 	if session.CreatedAt.Add(time.Duration(session.Duration) * time.Second).Before(time.Now()) {
 		linkStatus := LinkStatus{
