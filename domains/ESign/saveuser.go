@@ -15,10 +15,17 @@ func saveUser(c *gin.Context) {
 	var input User
 	c.ShouldBindJSON(&input)
 
-	// Disini panggil third party check dukcapil
-	// If oke
-
 	var dbInstance = db.GetDb()
+	if input.KtpNumber == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+	userBirthDate, err := time.Parse("2006-01-02", input.DateOfBirth)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+
 	var userDb = db.User{
 		KtpNumber:    input.KtpNumber,
 		Name:         input.Name,
@@ -26,11 +33,14 @@ func saveUser(c *gin.Context) {
 		Gender:       input.Gender,
 		PlaceOfBirth: input.PlaceOfBirth,
 		Cityzenship:  input.Cityzenship,
+		DateOfBirth:  userBirthDate,
 	}
 
-	//kurang di date of birth
-	fmt.Println(userDb)
-	dbInstance.Create(&userDb)
+	// Disini panggil third party check dukcapil
+	// If oke
+
+	// Update Or Create
+	dbInstance.Where(db.User{KtpNumber: userDb.KtpNumber}).Assign(&userDb).FirstOrCreate(&userDb)
 
 	if userDb.ID == "" {
 		c.JSON(http.StatusInternalServerError, gin.H{})
@@ -38,16 +48,26 @@ func saveUser(c *gin.Context) {
 	}
 
 	var sessionUser = db.Session{
+		UserID:   userDb.ID,
 		User:     userDb,
 		Duration: 1800,
 	}
-	dbInstance.Create(&sessionUser)
+	dbInstance.Order("created_at desc").First(&sessionUser)
+	if sessionUser.ID != 0 {
+		dbInstance.Model(&db.Session{ID: sessionUser.ID}).Update("duration", 0)
+	}
 
-	//Kurang di valid value
+	var newSessionUser = db.Session{
+		User:     userDb,
+		Duration: 1800,
+	}
+
+	dbInstance.Create(&newSessionUser)
+
 	sessionLink := SessionLink{
-		UserId: sessionUser.User.ID,
-		Path:   "http://linkbagasttd/" + sessionUser.Token,
-		Valid:  sessionUser.CreatedAt.Add(time.Duration(sessionUser.Duration) * time.Second),
+		UserId: newSessionUser.User.ID,
+		Path:   "http://linkbagasttd/" + newSessionUser.Token,
+		Valid:  newSessionUser.CreatedAt.Add(time.Duration(newSessionUser.Duration) * time.Second),
 	}
 
 	c.JSON(200, sessionLink)
@@ -55,4 +75,5 @@ func saveUser(c *gin.Context) {
 	// If the KTP is not valid with dukcapil's data
 	// c.JSON(http.StatusInternalServerError, gin.H{})
 	// return
+
 }
